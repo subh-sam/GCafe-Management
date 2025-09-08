@@ -4,7 +4,7 @@ import com.example.Cafe.Repository.DishRepository;
 import com.example.Cafe.dto.requestDto.ServerRequestDto;
 import com.example.Cafe.dto.responceDto.GenericResponceDto;
 import com.example.Cafe.dto.responceDto.ServerResponceDto;
-import model.Dish;
+import com.example.Cafe.model.Dish;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +18,16 @@ public class DishServiceImpl implements DishService{
 
     @Override
     public ServerResponceDto DishAdd(ServerRequestDto serverRequestDto) {
-       Long id = dishRepository.generateId();
         Dish dish = new Dish();
-        dish.setId(id);
 
         dish = ServerRequestDtoToDish(dish,serverRequestDto);
-
-        dishRepository.dishMap.put(id,dish);
-        dish = dishRepository.dishMap.get(id);
+        dishRepository.save(dish);
         return dishToServerResponseDto(dish);
     }
 
     @Override
     public ServerResponceDto getDish(Long id) {
-        Dish dish = dishRepository.dishMap.get(id);
+        Dish dish = dishRepository.getReferenceById(id);
         return dishToServerResponseDto(dish);
 
     }
@@ -39,7 +35,7 @@ public class DishServiceImpl implements DishService{
     @Override
     public List<ServerResponceDto> getAllDish() {
 
-        List<Dish> dishList = new ArrayList<>(dishRepository.dishMap.values());
+        List<Dish> dishList = new ArrayList<>(dishRepository.findAll());
         List<ServerResponceDto> serverResponceDtos = new ArrayList<>();
         for(Dish dish : dishList){
             //ServerResponceDto add = dishToServerResponseDto(dish);
@@ -50,30 +46,60 @@ public class DishServiceImpl implements DishService{
 
     @Override
     public ServerResponceDto updateDish(Long id, ServerRequestDto serverRequestDto) {
-        Dish dish = dishRepository.dishMap.get(id);
+        Dish dish = dishRepository.getReferenceById(id);
 
-        dish = dishRepository.dishMap.put(id,dish);
-
-            Dish dish1 = ServerRequestDtoToDish(dish, serverRequestDto);
-            return dishToServerResponseDto(dish1);
+        dish = ServerRequestDtoToDish(dish,serverRequestDto);
+        dishRepository.save(dish);
+        return dishToServerResponseDto(dish);
 
 
     }
 
     @Override
     public GenericResponceDto delete(Long id) {
-        Dish dish = dishRepository.dishMap.get(id);
+        Dish dish = dishRepository.getReferenceById(id);
         GenericResponceDto genericResponceDto = new GenericResponceDto();
         String name = dish.getName();
         if (name != null){
-            dishRepository.dishMap.remove(id);
+            dishRepository.deleteById(id);
             genericResponceDto.setSuccess(true);
             genericResponceDto.setMessage("Dish ("+id+") "+name+" has been removed Successfully");
         }else {
-            genericResponceDto.setSuccess(true);
+            genericResponceDto.setSuccess(false);
             genericResponceDto.setMessage("Dish ("+id+") Not found");
         }
         return genericResponceDto;
+    }
+
+    @Override
+    public List<ServerResponceDto> findDishByName(String name) {
+        List<Dish> filterDish = dishRepository.findByNameContaining(name);
+        List<ServerResponceDto> serverResponceDtos = new ArrayList<>();
+        for (Dish dish : filterDish){
+            serverResponceDtos.add(dishToServerResponseDto(dish));
+        }
+
+        return serverResponceDtos;
+    }
+
+    @Override
+    public List<ServerResponceDto> findDishByNameAndPrice(String q ,Long min , Long max) {
+        List<Dish> dishList = dishRepository.findByNameContainingAndPriceBetween(q,min,max);
+        List<ServerResponceDto> serverResponceDtos = new ArrayList<>();
+        for (Dish dish:dishList){
+           serverResponceDtos.add(dishToServerResponseDto(dish));
+        }
+        return serverResponceDtos;
+    }
+
+    @Override
+    public Dish getDishByCustomMethod(Long id) {
+        return dishRepository.getDishByIdUsingCustomMethod(id);
+    }
+
+    @Override
+    public List<Dish> getDishByNativeQuery(String name) {
+        return dishRepository.getDishByNativeQuery(name);
     }
 
 

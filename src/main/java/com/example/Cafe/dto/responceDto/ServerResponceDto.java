@@ -7,7 +7,7 @@ import lombok.Data;
 public class ServerResponceDto {
     private Long id;
     private String name;
-    private String price;
+    private Long price;
     private DishCategory category;
 
 
