@@ -38,7 +38,7 @@ public class DishController {
     }
 
 
-    @GetMapping("/{getAllDish}")
+    @GetMapping("/getAllDish")
     ResponseEntity<List<ServerResponceDto>> getAllDIsh(){
         return new ResponseEntity<>( dishService.getAllDish(),HttpStatusCode.valueOf(200));
     }
@@ -70,6 +70,13 @@ public class DishController {
     @GetMapping("/nativeQuery/{name}")
     ResponseEntity<List<Dish>> getDishByNativeQuery(@PathVariable String name){
         return new ResponseEntity<>(dishService.getDishByNativeQuery(name),HttpStatusCode.valueOf(200));
+    }
+
+    @Autowired
+    DishRepository dishRepository;
+    @GetMapping("/Rang")
+    List<Dish> print(@RequestParam Long min , @RequestParam Long max){
+        return dishRepository.getDishInRange(min,max);
     }
 
 }
