@@ -1,18 +1,18 @@
 package com.example.Cafe.model;
 
-import com.example.Cafe.enums.DishCategory;
+import com.example.Cafe.enums.Cuisine;
 import jakarta.persistence.*;
 import lombok.Data;
-@Table(name="Cafe_table")
+
 @Entity
+@Table(name = "Chef")
 @Data
-public class Dish {
+public class Chef {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Long price;
+    private String experience;
     @Enumerated(EnumType.STRING)
-    private DishCategory category;
-
+    private Cuisine cuisine;
 }

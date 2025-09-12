@@ -22,4 +22,9 @@ public interface DishRepository extends JpaRepository<Dish , Long>  {
     @Query( value = "Select a.* from Cafe_table a where a.price between ?1 AND ?2", nativeQuery = true)
     List<Dish> getDishInRange(Long min , Long max);
 
+    @Query(value = "select * from Cafe_table where category=?1", nativeQuery = true)
+    List<Dish> getDishByCategory(String category);
+
+
+
 }

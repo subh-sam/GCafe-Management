@@ -1,9 +1,9 @@
 package com.example.Cafe.controller;
-
 import com.example.Cafe.Repository.DishRepository;
 import com.example.Cafe.dto.requestDto.ServerRequestDto;
 import com.example.Cafe.dto.responceDto.GenericResponceDto;
 import com.example.Cafe.dto.responceDto.ServerResponceDto;
+import com.example.Cafe.enums.DishCategory;
 import com.example.Cafe.model.Dish;
 import com.example.Cafe.service.DishService;
 import org.apache.catalina.connector.Response;
@@ -75,8 +75,14 @@ public class DishController {
     @Autowired
     DishRepository dishRepository;
     @GetMapping("/Rang")
-    List<Dish> print(@RequestParam Long min , @RequestParam Long max){
+    List<Dish> printDishByRange(@RequestParam Long min , @RequestParam Long max){
         return dishRepository.getDishInRange(min,max);
     }
+
+    @GetMapping("/category/")
+    List<Dish> printDishByCategory(@PathVariable ServerRequestDto serverRequestDto){
+        return dishRepository.getDishByCategory(serverRequestDto.getName());
+    }
+
 
 }
